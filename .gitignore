@@ -3,9 +3,45 @@ __pycache__/
 .pytest-tmp/
 .tmp/
 pytest-cache-files-*/
+.mypy_cache/
+.ruff_cache/
 .venv/
+
+# Local configuration and secrets
 .env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local Codex/editor state
+.agents/
+.codex/
+.idea/
+.vscode/
+
+# Python build and coverage artifacts
 *.py[cod]
-data/*.sqlite3
-data/*.sqlite3-*
+build/
+dist/
+*.egg-info/
+.coverage
+coverage.xml
+htmlcov/
+
+# Local databases, caches, logs and processes
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite3-*
 data/yfinance_cache/
+*.log
+*.pid
+
+# Operating-system files
+.DS_Store
+Thumbs.db
