@@ -137,8 +137,9 @@ class IsharesSpreadsheetXmlHoldingsProvider:
             headers={"User-Agent": "Mozilla/5.0 NDX-WDI-MVP/1.0"},
         )
         response.raise_for_status()
-        warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
-        document = BeautifulSoup(response.text, "html.parser")
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
+            document = BeautifulSoup(response.text, "html.parser")
         worksheet = next(
             (
                 sheet

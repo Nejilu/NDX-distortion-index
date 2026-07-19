@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
@@ -29,8 +30,13 @@ class RecomputeRequest(BaseModel):
     holdings_csv: str | None = None
 
 
+@lru_cache(maxsize=8)
+def _database_for_path(path: str) -> SnapshotDatabase:
+    return SnapshotDatabase(path)
+
+
 def get_database() -> SnapshotDatabase:
-    return SnapshotDatabase(os.getenv("NDX_DB_PATH", "data/ndx_wdi.sqlite3"))
+    return _database_for_path(os.getenv("NDX_DB_PATH", "data/ndx_wdi.sqlite3"))
 
 
 @app.get("/api/current")

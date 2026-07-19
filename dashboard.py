@@ -169,7 +169,9 @@ def _render_universe(database: SnapshotDatabase, snapshot: dict[str, object]) ->
 
     st.subheader("Tous les composants")
     st.dataframe(
-        _component_table(components, weighting_basis), hide_index=True, width="stretch"
+        _component_table(components, weighting_basis),
+        hide_index=True,
+        width="stretch",
     )
     missing = components.loc[
         ~components["data_status"].astype("string").str.startswith("valid", na=False)
@@ -177,7 +179,9 @@ def _render_universe(database: SnapshotDatabase, snapshot: dict[str, object]) ->
     if not missing.empty:
         st.subheader("Données exclues du calcul")
         st.dataframe(
-            _component_table(missing, weighting_basis), hide_index=True, width="stretch"
+            _component_table(missing, weighting_basis),
+            hide_index=True,
+            width="stretch",
         )
 
 

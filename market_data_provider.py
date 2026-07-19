@@ -58,7 +58,8 @@ class YFinanceMarketDataProvider:
         self._configure_cache()
         unique_tickers = list(dict.fromkeys(str(ticker).upper() for ticker in tickers))
         rows: list[dict[str, object]] = []
-        with ThreadPoolExecutor(max_workers=min(self.max_workers, max(len(unique_tickers), 1))) as executor:
+        worker_count = max(1, min(int(self.max_workers), max(len(unique_tickers), 1)))
+        with ThreadPoolExecutor(max_workers=worker_count) as executor:
             futures = {executor.submit(self._fetch_one, ticker): ticker for ticker in unique_tickers}
             for future in as_completed(futures):
                 ticker = futures[future]

@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from api import app
+from api import _database_for_path, app, get_database
 from database import SnapshotDatabase
 from snapshot_service import recompute_all_snapshots, recompute_snapshot
 
@@ -90,3 +90,20 @@ def test_total_basis_is_persisted_and_queried_separately(tmp_path):
     assert total["ucits"]["snapshot_id"] != floating["ucits"]["snapshot_id"]
     assert all(row["counterfactual_weight"] is not None for row in components)
     assert all(row["float_weight"] is None for row in components)
+
+
+def test_api_database_is_cached_per_configured_path(tmp_path, monkeypatch):
+    first_path = tmp_path / "first.sqlite3"
+    second_path = tmp_path / "second.sqlite3"
+    _database_for_path.cache_clear()
+    try:
+        monkeypatch.setenv("NDX_DB_PATH", str(first_path))
+        first = get_database()
+        assert get_database() is first
+
+        monkeypatch.setenv("NDX_DB_PATH", str(second_path))
+        second = get_database()
+        assert second is not first
+        assert get_database() is second
+    finally:
+        _database_for_path.cache_clear()

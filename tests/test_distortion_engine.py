@@ -185,3 +185,26 @@ def test_yfinance_cache_is_redirected_to_a_writable_local_directory(tmp_path, mo
 
     assert cache_dir.is_dir()
     assert captured["path"] == str(cache_dir.resolve())
+
+
+def test_yfinance_worker_count_is_clamped_to_one(monkeypatch):
+    provider = YFinanceMarketDataProvider(max_workers=0)
+    monkeypatch.setattr(provider, "_configure_cache", lambda: None)
+    monkeypatch.setattr(
+        provider,
+        "_fetch_one",
+        lambda ticker: {
+            "ticker": ticker,
+            "price": 10.0,
+            "float_shares": 90.0,
+            "shares_outstanding": 100.0,
+            "market_cap": 1_000.0,
+            "float_shares_status": "reported",
+            "market_data_error": None,
+        },
+    )
+
+    result = provider.get_market_data(["A"])
+
+    assert result.loc[0, "ticker"] == "A"
+    assert result.loc[0, "price"] == 10.0

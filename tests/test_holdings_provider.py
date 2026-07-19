@@ -1,4 +1,5 @@
 import math
+import warnings
 
 import pandas as pd
 
@@ -108,11 +109,13 @@ def test_ishares_spreadsheet_xml_parser(monkeypatch):
             return None
 
     monkeypatch.setattr(holdings_module.requests, "get", lambda *args, **kwargs: Response())
+    filters_before = list(warnings.filters)
     holdings = IsharesSpreadsheetXmlHoldingsProvider().get_holdings()
 
     assert holdings["ticker"].tolist() == ["A", "B", "C"]
     assert math.isclose(holdings["actual_weight"].sum(), 1.0)
     assert holdings.attrs["holdings_as_of"] == "Jul 17, 2026"
+    assert warnings.filters == filters_before
 
 
 def test_ishares_funds_are_prioritized_before_invesco(monkeypatch):
